@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Harvest Playground</title>
+    <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/dracula.min.css" integrity="sha512-zKpFlhUX8c+WC6H/XTJavnEpWFt2zH9BU9vu0Hry5Y+SEgG21pRMFcecS7DgDXIegXBQ3uK9puwWPP3h6WSR9g==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+    <button id="history" data-ripple="true" class="icon-button" title="History"><span class="material-symbols-outlined">history</span></button>
+    <img src="./logo.png" height="100" alt="">
+    <h2>Color Harvest Playground</h2>
+    <div style="margin-bottom: var(--common-pixels);">Input an image URL, upload a file, or paste an image from the clipboard to obtain the predominant colors palette from the selected image.</div>
+    <div id="input-zone">
+        <button id="upload" data-ripple="true" class="icon-button" title="Upload an image"><span class="material-symbols-outlined">upload</span></button>
+        <input type="text" placeholder="Image URL" id="main-input">
+        <button id="send" data-ripple="true" class="icon-button" title="Send request"><span class="material-symbols-outlined">send</span></button>
+    </div>
+    <div id="output">
+        <img src="" height="300" alt="" style="cursor: zoom-in;">
+        <div id="extracted-colors"></div>
+        <pre id="json-response"></pre>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>
