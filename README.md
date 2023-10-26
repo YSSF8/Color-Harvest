@@ -88,6 +88,9 @@ fetch('https://colorharvest.darksidex37.repl.co', {
 }
 ```
 
+## Playground
+You can visit the [Color Harvest Playground](https://yssf8.github.io/Color-Harvest/) here.
+
 ## API
 This application uses the ColorHarvest API, which is designed to extract the most dominant colors from an image. The API is hosted separately and is under the MIT license.
 
