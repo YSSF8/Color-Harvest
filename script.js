@@ -49,6 +49,9 @@ input.addEventListener('keyup', e => {
     if (e.key == 'Enter') send.click();
 });
 
+let openColorTool = null;
+let openColor = null;
+
 function getData(imageUrl) {
     let previousSend = send.innerHTML;
     send.innerHTML = '<span class="material-symbols-outlined">rotate_right</span>';
@@ -65,6 +68,7 @@ function getData(imageUrl) {
     })
         .then(res => res.json())
         .then(data => {
+            console.log(data);
             let history = localStorage.getItem('history');
 
             if (history) {
@@ -90,12 +94,84 @@ function getData(imageUrl) {
                 const color = document.createElement('div');
                 color.classList.add('extracted-color');
                 color.style.backgroundColor = data.colors[i].hex;
-                color.title = `Click to copy to clipboard: ${data.colors[i].hex}`;
+                color.title = 'Open the color tool';
                 extractedColors.appendChild(color);
 
                 color.addEventListener('click', () => {
-                    navigator.clipboard.writeText(data.colors[i].hex);
-                    popup(`Copied to clipboard: ${data.colors[i].hex}`);
+                    if (openColorTool && openColor === color) {
+                        openColorTool.remove();
+                        openColorTool = null;
+                        openColor = null;
+                    } else {
+                        if (openColorTool) {
+                            openColorTool.remove();
+                        }
+
+                        const colorTool = document.createElement('div');
+                        colorTool.classList.add('color-tool');
+                        colorTool.innerHTML = `
+                        <h3>HEX</h3>
+                        <div class="palette">
+                            <div class="color-palette hex">${data.colors[i].hex}</div>
+                            <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
+                        </div>
+                        <h3>RGB</h3>
+                        <div class="palette">
+                            <div class="rgb multi-palette">
+                                <div class="color-palette">${data.colors[i].rgb[0]}</div>
+                                <div class="color-palette">${data.colors[i].rgb[1]}</div>
+                                <div class="color-palette">${data.colors[i].rgb[2]}</div>
+                            </div>
+                            <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
+                        </div>
+                        <h3>HSL</h3>
+                        <div class="palette">
+                            <div class="hsl multi-palette">
+                                <div class="color-palette">${data.colors[i].hsl[0].toFixed(2)}</div>
+                                <div class="color-palette">${data.colors[i].hsl[1].toFixed(2)}</div>
+                                <div class="color-palette">${data.colors[i].hsl[2].toFixed(2)}</div>
+                            </div>
+                            <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
+                        </div>
+                        `;
+                        document.body.appendChild(colorTool);
+
+                        colorTool.querySelectorAll('.copy-color').forEach((copyBtn, index) => {
+                            copyBtn.addEventListener('click', () => {
+                                let colorValue;
+
+                                if (index === 0) {
+                                    colorValue = data.colors[i].hex; // HEX
+                                } else if (index === 1) {
+                                    colorValue = data.colors[i].rgb.join(', '); // RGB
+                                } else if (index === 2) {
+                                    colorValue = data.colors[i].hsl.join(', '); // HSL
+                                }
+
+                                navigator.clipboard.writeText(colorValue);
+                                popup('Copied to clipboard');
+                            });
+                        });
+
+                        colorToolPos();
+                        window.addEventListener('resize', colorToolPos);
+
+                        openColorTool = colorTool;
+                        openColor = color;
+
+                        function colorToolPos() {
+                            colorTool.style.top = `${color.offsetTop + color.offsetHeight + 3}px`;
+                            let leftPos = color.offsetLeft;
+                            let toolWidth = colorTool.offsetWidth;
+                            let pageWidth = window.innerWidth;
+
+                            if (leftPos + toolWidth > pageWidth) {
+                                leftPos = pageWidth - toolWidth - 20;
+                            }
+
+                            colorTool.style.left = `${leftPos}px`;
+                        }
+                    }
                 });
             }
 
@@ -205,7 +281,7 @@ historyBtn.addEventListener('click', () => {
 
 image.addEventListener('click', () => {
     const fullscreenMode = document.createElement('div');
-    fullscreenMode.innerHTML = `<img src="${image.src}" height="500" alt="">`;
+    fullscreenMode.innerHTML = `<img src="${image.src}" width="500" alt="">`;
     fullscreenMode.classList.add('fullscreen');
     document.body.appendChild(fullscreenMode);
 
@@ -255,18 +331,19 @@ function popup(message = 'New Message', timeout = 3) {
     }, timeout * ms);
 }
 
-document.querySelectorAll('[data-ripple="true"]').forEach(btn => {
-    btn.addEventListener('click', e => {
-        const rect = btn.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+document.body.addEventListener('click', e => {
+    const btn = e.target.closest('[data-ripple="true"]');
+    if (!btn) return;
 
-        const ripple = document.createElement('span');
-        ripple.classList.add('ripple');
-        ripple.style.left = `${x}px`;
-        ripple.style.top = `${y}px`;
-        btn.appendChild(ripple);
+    const rect = btn.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
 
-        setTimeout(() => ripple.remove(), 600);
-    });
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    btn.appendChild(ripple);
+
+    setTimeout(() => ripple.remove(), 600);
 });
