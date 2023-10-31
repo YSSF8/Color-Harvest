@@ -40,7 +40,7 @@ button {
     vertical-align: middle;
     -webkit-tap-highlight-color: transparent;
 
-    &:is(input) {
+    &:is(#main-input) {
         width: 3in;
     }
 
@@ -86,6 +86,7 @@ button {
         height: 0;
         opacity: .3;
     }
+
     to {
         width: 500px;
         height: 500px;
@@ -129,7 +130,7 @@ img {
     justify-content: center;
     flex-wrap: wrap;
     max-width: 6.5in;
-    
+
     .extracted-color {
         width: 3rem;
         height: 2rem;
@@ -253,6 +254,7 @@ img {
     background-color: var(--primary-color);
     box-shadow: 0 0 7px -2px #000;
     border-radius: var(--common-pixels);
+    padding: var(--common-gap);
 
     h3 {
         padding: (--common-pixels);
@@ -273,8 +275,55 @@ img {
         cursor: pointer;
     }
 
+    .color-picker-container {
+        display: flex;
+        flex-direction: column;
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: transparent;
+            width: 4rem;
+            height: 3rem;
+            margin: 0 0 var(--common-gap) var(--common-gap);
+            padding: var(--common-gap);
+            cursor: pointer;
+    
+            &::-webkit-color-swatch {
+                border-radius: var(--common-pixels);
+                border: none;
+            }
+    
+            &::-moz-color-swatch {
+                border-radius: var(--common-pixels);
+                border: none;
+            }
+        }
+    }
+
     .multi-palette {
         display: flex;
+
+        .color-shades {
+            display: flex;
+            align-items: center;
+            gap: var(--common-gap);
+
+            .shade {
+                width: 3rem;
+                height: 2rem;
+                border: 1px solid var(--outlines);
+                border-radius: var(--common-pixels);
+                margin-bottom: var(--common-gap);
+                -webkit-tap-highlight-color: none;
+                cursor: pointer;
+
+                &:first-child {
+                    margin-left: var(--common-gap);
+                }
+            }
+        }
     }
 
     .copy-color {
@@ -320,9 +369,11 @@ img {
     #json-response {
         width: 3.7in;
     }
+
     .fullscreen img {
         width: 350px;
     }
+
     #main-input {
         width: 2.7in;
     }

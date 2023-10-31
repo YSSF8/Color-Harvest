@@ -133,8 +133,44 @@ function getData(imageUrl) {
                             </div>
                             <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
                         </div>
+                        <h3>Misc</h3>
+                        <div class="palette">
+                            <div class="color-picker-container">
+                                <input type="color" value="${data.colors[i].hex}">
+                                <div class="misc multi-palette">
+                                    <div class="color-shades">
+                                        <div class="shade" style="background-color: ${setShade(0)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(0))}\nRGB: ${setShade(0)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(0))}"></div>
+                                        <div class="shade" style="background-color: ${setShade(1)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(1))}\nRGB: ${setShade(1)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(1))}"></div>
+                                        <div class="shade" style="background-color: ${setShade(2)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(2))}\nRGB: ${setShade(2)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(2))}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         `;
                         document.body.appendChild(colorTool);
+
+                        function differShades(a, b = 1.7) {
+                            return Math.floor(Math.abs(data.colors[i].rgb[a] / b));
+                        }
+
+                        function setShade(x = 0, y = 1, z = 2) {
+                            switch (x) {
+                                case 0:
+                                    return `rgb(${differShades(x)}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]})`;
+                                case 1:
+                                    return `rgb(${data.colors[i].rgb[y]}, ${differShades(x)}, ${data.colors[i].rgb[z]})`;
+                                case 2:
+                                    return `rgb(${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}, ${differShades(x)})`;
+                                default:
+                                    return `rgb(${data.colors[i].rgb[x]}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]})`;
+                            }
+                        }
+
+                        colorTool.querySelectorAll('.color-shades .shade').forEach((shade, index) => {
+                            shade.addEventListener('click', () => {
+                                colorTool.querySelector('input[type="color"]').value = convertColorFormat.rgbToHex(setShade(index));
+                            });
+                        });
 
                         colorTool.querySelectorAll('.copy-color').forEach((copyBtn, index) => {
                             copyBtn.addEventListener('click', () => {
@@ -329,6 +365,59 @@ function popup(message = 'New Message', timeout = 3) {
 
         setTimeout(() => msg.remove(), timeout * ms);
     }, timeout * ms);
+}
+
+let convertColorFormat = {
+    rgbToHex(color = 'rgb(0, 0, 0)') {
+        const match = color.match(/(\d+), (\d+), (\d+)/);
+        if (!match) {
+            throw new Error('Invalid color format');
+        }
+
+        const red = parseInt(match[1]);
+        const green = parseInt(match[2]);
+        const blue = parseInt(match[3]);
+
+        const hex = `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}${blue.toString(16).padStart(2, '0')}`;
+
+        return hex;
+    },
+    rgbToHsl(color = 'rgb(0, 0, 0)') {
+        const match = color.match(/(\d+), (\d+), (\d+)/);
+        if (!match) {
+            throw new Error('Invalid color format');
+        }
+
+        const red = parseInt(match[1]) / 255;
+        const green = parseInt(match[2]) / 255;
+        const blue = parseInt(match[3]) / 255;
+
+        const max = Math.max(red, green, blue);
+        const min = Math.min(red, green, blue);
+
+        const lightness = (max + min) / 2;
+
+        let saturation = 0;
+        let hue = 0;
+
+        if (max !== min) {
+            const delta = max - min;
+
+            saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+
+            if (max === red) {
+                hue = (green - blue) / delta + (green < blue ? 6 : 0);
+            } else if (max === green) {
+                hue = (blue - red) / delta + 2;
+            } else {
+                hue = (red - green) / delta + 4;
+            }
+
+            hue *= 60;
+        }
+
+        return `hsl(${Math.round(hue)}°, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%)`;
+    }
 }
 
 document.body.addEventListener('click', e => {
