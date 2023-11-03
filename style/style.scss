@@ -11,6 +11,7 @@
     --accent-color: #273455;
     --secondary-accent-color: #232f4d;
     --tertiary-accent-color: #1f2a44;
+    --link-color: #5a6ea1;
     --transparent-black: rgba(0, 0, 0, .5);
 }
 
@@ -91,6 +92,15 @@ button {
         width: 500px;
         height: 500px;
         opacity: 0;
+    }
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
     }
 }
 

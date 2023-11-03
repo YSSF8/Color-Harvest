@@ -12,6 +12,7 @@
   --accent-color: #273455;
   --secondary-accent-color: #232f4d;
   --tertiary-accent-color: #1f2a44;
+  --link-color: #5a6ea1;
   --transparent-black: rgba(0, 0, 0, .5);
 }
 
@@ -91,6 +92,14 @@ button:is(button):is([data-ripple=true]) .ripple {
     opacity: 0;
   }
 }
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 .material-symbols-outlined {
   line-height: 0 !important;
 }
