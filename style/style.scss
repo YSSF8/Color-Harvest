@@ -265,6 +265,9 @@ img {
     box-shadow: 0 0 7px -2px #000;
     border-radius: var(--common-pixels);
     padding: var(--common-gap);
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 300ms;
 
     h3 {
         padding: (--common-pixels);
@@ -309,6 +312,11 @@ img {
                 border-radius: var(--common-pixels);
                 border: none;
             }
+        }
+
+        .h4-alt {
+            margin: 0 0 var(--common-gap) var(--common-gap);
+            font-weight: bold;
         }
     }
 
@@ -377,7 +385,7 @@ img {
 
 @media (max-width: 600px) {
     #json-response {
-        width: 3.7in;
+        width: 3.5in;
     }
 
     .fullscreen img {
@@ -385,6 +393,6 @@ img {
     }
 
     #main-input {
-        width: 2.7in;
+        width: 2.5in !important;
     }
 }

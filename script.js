@@ -68,7 +68,6 @@ function getData(imageUrl) {
     })
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             let history = localStorage.getItem('history');
 
             if (history) {
@@ -78,7 +77,7 @@ function getData(imageUrl) {
             }
 
             const date = new Date();
-            history.push({
+            history.unshift({
                 url: imageUrl,
                 date: date.toLocaleDateString(),
                 time: date.toLocaleTimeString()
@@ -136,12 +135,14 @@ function getData(imageUrl) {
                         <h3>Misc</h3>
                         <div class="palette">
                             <div class="color-picker-container">
+                                <div class="h4-alt">Color picker</div>
                                 <input type="color" value="${data.colors[i].hex}">
+                                <div class="h4-alt">Suggested colors</div>
                                 <div class="misc multi-palette">
                                     <div class="color-shades">
-                                        <div class="shade" style="background-color: ${setShade(0)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(0))}\nRGB: ${setShade(0)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(0))}"></div>
-                                        <div class="shade" style="background-color: ${setShade(1)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(1))}\nRGB: ${setShade(1)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(1))}"></div>
-                                        <div class="shade" style="background-color: ${setShade(2)};" title="HEX: ${convertColorFormat.rgbToHex(setShade(2))}\nRGB: ${setShade(2)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(2))}"></div>
+                                        <div class="shade" style="background-color: rgb(${setShade(0)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(0))}\nRGB: ${setShade(0)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(0))}"></div>
+                                        <div class="shade" style="background-color: rgb(${setShade(1)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(1))}\nRGB: ${setShade(1)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(1))}"></div>
+                                        <div class="shade" style="background-color: rgb(${setShade(2)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(2))}\nRGB: ${setShade(2)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(2))}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -156,15 +157,19 @@ function getData(imageUrl) {
                         function setShade(x = 0, y = 1, z = 2) {
                             switch (x) {
                                 case 0:
-                                    return `rgb(${differShades(x)}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]})`;
+                                    return `${differShades(x)}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}`;
                                 case 1:
-                                    return `rgb(${data.colors[i].rgb[y]}, ${differShades(x)}, ${data.colors[i].rgb[z]})`;
+                                    return `${data.colors[i].rgb[y]}, ${differShades(x)}, ${data.colors[i].rgb[z]}`;
                                 case 2:
-                                    return `rgb(${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}, ${differShades(x)})`;
+                                    return `${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}, ${differShades(x)}`;
                                 default:
-                                    return `rgb(${data.colors[i].rgb[x]}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]})`;
+                                    return `${data.colors[i].rgb[x]}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}`;
                             }
                         }
+
+                        setTimeout(() => {
+                            colorTool.style.transform = 'scaleY(1)';
+                        });
 
                         colorTool.querySelectorAll('.color-shades .shade').forEach((shade, index) => {
                             shade.addEventListener('click', () => {
@@ -323,18 +328,17 @@ image.addEventListener('click', () => {
 
     const img = fullscreenMode.querySelector('img');
 
-    setTimeout(() => {
-        fullscreenMode.style.opacity = 1;
-        img.style.transform = 'scale(1)';
-    });
-
     fullscreenMode.addEventListener('click', e => {
         if (e.target == fullscreenMode) {
             fullscreenMode.style.opacity = 0;
             img.style.transform = 'scale(.8)';
-
             setTimeout(() => fullscreenMode.remove(), 200);
         }
+    });
+
+    setTimeout(() => {
+        fullscreenMode.style.opacity = 1;
+        img.style.transform = 'scale(1)';
     });
 });
 
@@ -416,7 +420,7 @@ let convertColorFormat = {
             hue *= 60;
         }
 
-        return `hsl(${Math.round(hue)}°, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%)`;
+        return `${Math.round(hue)}°, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%`;
     }
 }
 
