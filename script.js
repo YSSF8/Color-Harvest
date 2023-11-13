@@ -15,6 +15,7 @@ send.addEventListener('click', () => {
 
     getData(input.value);
 });
+
 upload.addEventListener('click', () => {
     const file = document.createElement('input');
     file.type = 'file';
@@ -29,11 +30,12 @@ upload.addEventListener('click', () => {
         fr.readAsDataURL(file.files[0]);
     });
 });
+
 window.addEventListener('paste', e => {
     const items = (e.clipboardData || window.clipboardData).items;
 
-    for (let index in items) {
-        const item = items[index];
+    for (let i in items) {
+        const item = items[i];
         if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
             const blob = item.getAsFile();
             const fr = new FileReader();
@@ -117,18 +119,26 @@ function getData(imageUrl) {
                         <h3>RGB</h3>
                         <div class="palette">
                             <div class="rgb multi-palette">
-                                <div class="color-palette">${data.colors[i].rgb[0]}</div>
-                                <div class="color-palette">${data.colors[i].rgb[1]}</div>
-                                <div class="color-palette">${data.colors[i].rgb[2]}</div>
+                                ${(() => {
+                                let palette = '';
+                                for (let j in data.colors[i].rgb) {
+                                    palette += `<div class="color-palette">${data.colors[i].rgb[j]}</div>`;
+                                }
+                                return palette;
+                            })()}
                             </div>
                             <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
                         </div>
                         <h3>HSL</h3>
                         <div class="palette">
                             <div class="hsl multi-palette">
-                                <div class="color-palette">${data.colors[i].hsl[0].toFixed(2)}</div>
-                                <div class="color-palette">${data.colors[i].hsl[1].toFixed(2)}</div>
-                                <div class="color-palette">${data.colors[i].hsl[2].toFixed(2)}</div>
+                                ${(() => {
+                                let palette = '';
+                                for (let j in data.colors[i].hsl) {
+                                    palette += `<div class="color-palette">${data.colors[i].hsl[j].toFixed(2)}</div>`;
+                                }
+                                return palette;
+                            })()}
                             </div>
                             <button class="icon-button copy-color" data-ripple="true" title="Copy to clipboard"><span class="material-symbols-outlined">content_copy</span></div>
                         </div>
@@ -140,9 +150,13 @@ function getData(imageUrl) {
                                 <div class="h4-alt">Suggested colors</div>
                                 <div class="misc multi-palette">
                                     <div class="color-shades">
-                                        <div class="shade" style="background-color: rgb(${setShade(0)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(0))}\nRGB: ${setShade(0)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(0))}"></div>
-                                        <div class="shade" style="background-color: rgb(${setShade(1)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(1))}\nRGB: ${setShade(1)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(1))}"></div>
-                                        <div class="shade" style="background-color: rgb(${setShade(2)});" title="HEX: ${convertColorFormat.rgbToHex(setShade(2))}\nRGB: ${setShade(2)}\nHSL: ${convertColorFormat.rgbToHsl(setShade(2))}"></div>
+                                        ${(() => {
+                                            let shades = '';
+                                            for (let j in data.colors[i].rgb) {
+                                                shades += `<div class="shade" style="background-color: rgb(${Math.min(Math.round(data.colors[i].rgb[0] * (1 + 0.3 * j)), 255)}, ${Math.min(Math.round(data.colors[i].rgb[1] * (1 + 0.3 * j)), 255)}, ${Math.min(Math.round(data.colors[i].rgb[2] * (1 + 0.3 * j)), 255)});" title="Loading..."></div>`;
+                                            }
+                                            return shades;
+                                        })()}
                                     </div>
                                 </div>
                             </div>
@@ -150,30 +164,15 @@ function getData(imageUrl) {
                         `;
                         document.body.appendChild(colorTool);
 
-                        function differShades(a, b = 1.7) {
-                            return Math.floor(Math.abs(data.colors[i].rgb[a] / b));
-                        }
-
-                        function setShade(x = 0, y = 1, z = 2) {
-                            switch (x) {
-                                case 0:
-                                    return `${differShades(x)}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}`;
-                                case 1:
-                                    return `${data.colors[i].rgb[y]}, ${differShades(x)}, ${data.colors[i].rgb[z]}`;
-                                case 2:
-                                    return `${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}, ${differShades(x)}`;
-                                default:
-                                    return `${data.colors[i].rgb[x]}, ${data.colors[i].rgb[y]}, ${data.colors[i].rgb[z]}`;
-                            }
-                        }
-
                         setTimeout(() => {
                             colorTool.style.transform = 'scaleY(1)';
                         });
 
-                        colorTool.querySelectorAll('.color-shades .shade').forEach((shade, index) => {
+                        colorTool.querySelectorAll('.color-shades .shade').forEach(shade => {
+                            shade.title = `HEX: ${convertColorFormat.rgbToHex(shade.style.backgroundColor)}\nRGB: ${shade.style.backgroundColor.replace('rgb(', '').replace(')', '')}\nHSL: ${convertColorFormat.rgbToHsl(shade.style.backgroundColor)}`;
+
                             shade.addEventListener('click', () => {
-                                colorTool.querySelector('input[type="color"]').value = convertColorFormat.rgbToHex(setShade(index));
+                                colorTool.querySelector('input[type="color"]').value = convertColorFormat.rgbToHex(shade.style.backgroundColor);
                             });
                         });
 
@@ -186,7 +185,8 @@ function getData(imageUrl) {
                                 } else if (index === 1) {
                                     colorValue = data.colors[i].rgb.join(', '); // RGB
                                 } else if (index === 2) {
-                                    colorValue = data.colors[i].hsl.join(', '); // HSL
+                                    const hslValues = data.colors[i].hsl.map(value => value.toFixed(2));
+                                    colorValue = hslValues.join(', '); // HSL
                                 }
 
                                 navigator.clipboard.writeText(colorValue);

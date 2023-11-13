@@ -65,13 +65,12 @@ button:is(button):is(.icon-button) {
   justify-content: center;
   align-items: center;
 }
-input:is(button):is([data-ripple=true]),
-button:is(button):is([data-ripple=true]) {
+
+*:is([data-ripple=true]) {
   overflow: hidden;
   position: relative;
 }
-input:is(button):is([data-ripple=true]) .ripple,
-button:is(button):is([data-ripple=true]) .ripple {
+*:is([data-ripple=true]) .ripple {
   position: absolute;
   background-color: var(--text-color);
   pointer-events: none;
@@ -146,7 +145,7 @@ img {
 
 .message {
   position: fixed;
-  top: 5%;
+  top: 20px;
   left: 50%;
   opacity: 0;
   transform: translateX(-50%) scale(0.8);
@@ -313,7 +312,7 @@ img {
   border: 1px solid var(--outlines);
   border-radius: var(--common-pixels);
   margin-bottom: var(--common-gap);
-  -webkit-tap-highlight-color: none;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
 .color-tool .multi-palette .color-shades .shade:first-child {
